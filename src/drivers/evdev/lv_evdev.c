@@ -159,6 +159,8 @@ static void _evdev_read(lv_indev_t * indev, lv_indev_data_t * data)
         if(in.type == EV_REL) {
             if(in.code == REL_X) dsc->root_x += in.value;
             else if(in.code == REL_Y) dsc->root_y += in.value;
+            dsc->root_x= LV_CLAMP(dsc->min_x, dsc->root_x, dsc->max_x);
+            dsc->root_y= LV_CLAMP(dsc->min_y, dsc->root_y, dsc->max_y);
         }
         else if(in.type == EV_ABS) {
             if(in.code == ABS_X || in.code == ABS_MT_POSITION_X) dsc->root_x = in.value;
@@ -431,6 +433,8 @@ lv_indev_t * lv_evdev_create(lv_indev_type_t indev_type, const char * dev_path)
         else {
             LV_LOG_INFO("ioctl EVIOCGABS(ABS_Y) failed: %s", strerror(errno));
         }
+
+        LV_LOG_INFO("[%s](%d, %d) (%d, %d)\n", dev_path, dsc->min_x, dsc->min_y, dsc->max_x, dsc->max_y);
     }
 
     lv_indev_t * indev = lv_indev_create();
